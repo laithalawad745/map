@@ -394,7 +394,7 @@ export default function EarthGlobe() {
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#000' }}>
       <Canvas camera={{ position: [0, 0, 8], fov: 45 }} gl={{ antialias: true }}>
-        {(gameState === 'menu' || gameState === 'level-complete' || gameState === 'learning-complete' || gameState === 'test-failed' || gameState === 'final-complete') && (
+          {(gameState === 'menu' || gameState === 'level-complete' || gameState === 'learning-complete' || gameState === 'test-failed' || gameState === 'final-complete') && (
           <>
             <ambientLight intensity={0.8} />
             <directionalLight position={[5, 3, 5]} intensity={2} />
@@ -451,15 +451,17 @@ export default function EarthGlobe() {
         <div style={{
           position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
           background: 'rgba(0, 0, 0, 0.95)', border: '3px solid #4d94ff', borderRadius: '20px',
-          padding: '50px', color: 'white', fontFamily: 'Arial, sans-serif', minWidth: '600px',
-          textAlign: 'center', zIndex: 2000, direction: 'rtl'
+          padding: '30px 20px', color: 'white', fontFamily: 'Arial, sans-serif',
+          width: '90%', maxWidth: '600px',
+          textAlign: 'center', zIndex: 2000, direction: 'rtl',
+          maxHeight: '90vh', overflowY: 'auto'
         }}>
-          <div style={{ fontSize: '42px', marginBottom: '15px', fontWeight: 'bold' }}>رحلة تعلم أوروبا</div>
-          <div style={{ fontSize: '18px', marginBottom: '10px', opacity: 0.8 }}>تعلم مواقع 44 دولة أوروبية</div>
-          <div style={{ fontSize: '16px', marginBottom: '40px', opacity: 0.7 }}>4 مستويات • 11 دولة في كل مستوى • اختبار نهائي شامل</div>
+          <div style={{ fontSize: 'clamp(24px, 5vw, 42px)', marginBottom: '15px', fontWeight: 'bold' }}>رحلة تعلم أوروبا</div>
+          <div style={{ fontSize: 'clamp(14px, 3vw, 18px)', marginBottom: '10px', opacity: 0.8 }}>تعلم مواقع 44 دولة أوروبية</div>
+          <div style={{ fontSize: 'clamp(12px, 2.5vw, 16px)', marginBottom: '30px', opacity: 0.7 }}>4 مستويات • 11 دولة في كل مستوى • اختبار نهائي شامل</div>
           
-          <div style={{ marginBottom: '40px' }}>
-            <div style={{ fontSize: '16px', marginBottom: '10px', opacity: 0.9 }}>التقدم الكلي</div>
+          <div style={{ marginBottom: '30px' }}>
+            <div style={{ fontSize: 'clamp(12px, 2.5vw, 16px)', marginBottom: '10px', opacity: 0.9 }}>التقدم الكلي</div>
             <div style={{ 
               width: '100%', height: '30px', background: 'rgba(255,255,255,0.1)',
               borderRadius: '15px', overflow: 'hidden', border: '2px solid rgba(77, 148, 255, 0.3)',
@@ -471,7 +473,7 @@ export default function EarthGlobe() {
                   background: levelsCompleted[i] ? 'linear-gradient(90deg, #00ff00, #00cc00)' : 'rgba(255,255,255,0.05)',
                   borderRight: i < 3 ? '1px solid rgba(255,255,255,0.2)' : 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '14px', fontWeight: 'bold',
+                  fontSize: 'clamp(12px, 2.5vw, 14px)', fontWeight: 'bold',
                   transition: 'all 0.5s ease'
                 }}>
                   {levelsCompleted[i] ? '✓' : i + 1}
@@ -480,13 +482,13 @@ export default function EarthGlobe() {
             </div>
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '20px' }}>
             {[1, 2, 3, 4].map(level => (
               <button key={level} 
                 onClick={() => startLearning(level)} 
                 disabled={level > 1 && !levelsCompleted[level - 2]}
                 style={{
-                  padding: '20px', fontSize: '18px', 
+                  padding: '15px 10px', fontSize: 'clamp(14px, 3vw, 18px)', 
                   background: levelsCompleted[level - 1] ? 'linear-gradient(135deg, #00ff00, #00cc00)' : 
                               (level > 1 && !levelsCompleted[level - 2]) ? 'rgba(100, 100, 100, 0.2)' :
                               'linear-gradient(135deg, #4d94ff, #00d4ff)',
@@ -494,24 +496,26 @@ export default function EarthGlobe() {
                   borderRadius: '10px', color: 'white',
                   cursor: (level > 1 && !levelsCompleted[level - 2]) ? 'not-allowed' : 'pointer',
                   transition: 'all 0.3s', fontWeight: 'bold',
-                  opacity: (level > 1 && !levelsCompleted[level - 2]) ? 0.5 : 1
+                  opacity: (level > 1 && !levelsCompleted[level - 2]) ? 0.5 : 1,
+                  minHeight: '80px', display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center'
                 }}>
-                {levelsCompleted[level - 1] ? '✓ ' : ''}المستوى {level}
-                <div style={{ fontSize: '14px', marginTop: '5px', opacity: 0.9 }}>11 دولة</div>
+                <div>{levelsCompleted[level - 1] ? '✓ ' : ''}المستوى {level}</div>
+                <div style={{ fontSize: 'clamp(11px, 2.5vw, 14px)', marginTop: '5px', opacity: 0.9 }}>11 دولة</div>
               </button>
             ))}
           </div>
           
           {levelsCompleted.every(l => l) && (
             <button onClick={startFinalTest} style={{
-              padding: '25px', fontSize: '24px', width: '100%',
+              padding: '20px 15px', fontSize: 'clamp(16px, 4vw, 24px)', width: '100%',
               background: 'linear-gradient(135deg, #FFD700, #FFA500)',
               border: '3px solid #FFD700', borderRadius: '15px', color: 'white',
               cursor: 'pointer', fontWeight: 'bold', marginTop: '10px',
               boxShadow: '0 4px 20px rgba(255, 215, 0, 0.4)'
             }}>
-               الاختبار النهائي الكبير
-              <div style={{ fontSize: '16px', marginTop: '8px', opacity: 0.9 }}>اختبر نفسك في جميع الـ 44 دولة!</div>
+              الاختبار النهائي الكبير
+              <div style={{ fontSize: 'clamp(12px, 3vw, 16px)', marginTop: '8px', opacity: 0.9 }}>اختبر نفسك في جميع الـ 44 دولة!</div>
             </button>
           )}
         </div>
@@ -521,13 +525,13 @@ export default function EarthGlobe() {
         onClick={() => setAutoRotate(!autoRotate)}
         style={{
           position: 'absolute', bottom: '30px', right: '30px', zIndex: 1000,
-          padding: '10px 15px', fontSize: '18px', 
+          padding: '10px 15px', fontSize: 'clamp(14px, 3vw, 18px)', 
           background: autoRotate ? 'rgba(255, 100, 100, 0.9)' : 'rgba(100, 255, 100, 0.9)',
           border: 'none', borderRadius: '10px', color: 'white',
           cursor: 'pointer', fontWeight: 'bold', direction: 'rtl'
         }}
       >
-        {autoRotate ? ' إيقاف' : 'تشغيل'}
+        {autoRotate ? 'إيقاف' : 'تشغيل'}
       </button>
       
       {gameState === 'learning' && (
