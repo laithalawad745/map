@@ -613,24 +613,27 @@ export default function EarthGlobe() {
         </>
       )}
       
-      {gameState === 'learning-complete' && (
+  {gameState === 'learning-complete' && (
         <div style={{
           position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
           background: 'rgba(0, 0, 0, 0.95)', border: '3px solid #FFD700', borderRadius: '20px',
-          padding: '50px', color: 'white', fontFamily: 'Arial, sans-serif', minWidth: '500px',
-          textAlign: 'center', zIndex: 2000, direction: 'rtl'
+          padding: 'clamp(20px, 5vw, 50px)', color: 'white', fontFamily: 'Arial, sans-serif',
+          width: '90%', maxWidth: '500px',
+          textAlign: 'center', zIndex: 2000, direction: 'rtl',
+          maxHeight: '90vh', overflowY: 'auto'
         }}>
-          <div style={{ fontSize: '32px', marginBottom: '20px', fontWeight: 'bold' }}>
+          <div style={{ fontSize: 'clamp(24px, 6vw, 32px)', marginBottom: '15px', fontWeight: 'bold' }}>
             أحسنت! أتممت التعلم
           </div>
-          <div style={{ fontSize: '18px', marginBottom: '40px', opacity: 0.9, lineHeight: '1.8' }}>
+          <div style={{ fontSize: 'clamp(14px, 3.5vw, 18px)', marginBottom: '30px', opacity: 0.9, lineHeight: '1.8' }}>
             تعلمت مواقع 11 دولة في المستوى {currentLevel}!<br/>
             الآن حان وقت الاختبار 
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <button onClick={startTest} style={{
-              padding: '20px 40px', fontSize: '22px',
+              padding: 'clamp(15px, 4vw, 20px) clamp(20px, 5vw, 40px)', 
+              fontSize: 'clamp(16px, 4vw, 22px)',
               background: 'linear-gradient(135deg, #4d94ff, #00d4ff)',
               border: '3px solid #4d94ff', borderRadius: '12px', color: 'white',
               cursor: 'pointer', fontWeight: 'bold',
@@ -640,7 +643,8 @@ export default function EarthGlobe() {
             </button>
             
             <button onClick={() => startLearning(currentLevel)} style={{
-              padding: '15px 40px', fontSize: '18px',
+              padding: 'clamp(12px, 3vw, 15px) clamp(20px, 5vw, 40px)', 
+              fontSize: 'clamp(14px, 3.5vw, 18px)',
               background: 'rgba(255, 255, 255, 0.1)',
               border: '2px solid rgba(255, 255, 255, 0.3)',
               borderRadius: '10px', color: 'white',
@@ -650,17 +654,19 @@ export default function EarthGlobe() {
             </button>
             
             <button onClick={resetGame} style={{
-              padding: '12px 30px', fontSize: '16px',
+              padding: 'clamp(10px, 2.5vw, 12px) clamp(15px, 4vw, 30px)', 
+              fontSize: 'clamp(13px, 3vw, 16px)',
               background: 'transparent',
               border: '2px solid rgba(255, 255, 255, 0.2)',
               borderRadius: '8px', color: 'white',
-              cursor: 'pointer', marginTop: '10px'
+              cursor: 'pointer', marginTop: '8px'
             }}>
               ← القائمة الرئيسية
             </button>
           </div>
         </div>
       )}
+      
       
       {(gameState === 'test' || gameState === 'final-test') && (
         <>
@@ -765,29 +771,47 @@ export default function EarthGlobe() {
         </div>
       )}
       
-      {gameState === 'level-complete' && (
+  {gameState === 'level-complete' && (
         <div style={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          background: 'rgba(0, 0, 0, 0.95)', border: '3px solid #00ff00', borderRadius: '20px',
-          padding: '50px', color: 'white', fontFamily: 'Arial, sans-serif', minWidth: '500px',
-          textAlign: 'center', zIndex: 2000, direction: 'rtl'
+          position: 'absolute', 
+          top: '50%', 
+          left: '50%', 
+          transform: 'translate(-50%, -50%)',
+          background: 'rgba(0, 0, 0, 0.95)', 
+          border: window.innerWidth < 600 ? '2px solid #00ff00' : '3px solid #00ff00', 
+          borderRadius: window.innerWidth < 600 ? '12px' : '15px',
+          padding: window.innerWidth < 600 ? '15px' : '50px', 
+          color: 'white', 
+          fontFamily: 'Arial, sans-serif', 
+          width: window.innerWidth < 600 ? '70%' : 'auto',
+          minWidth: window.innerWidth < 600 ? 'auto' : '500px',
+          maxWidth: window.innerWidth < 600 ? '70%' : '600px',
+          maxHeight: window.innerWidth < 600 ? '85vh' : '90vh',
+          overflowY: 'auto',
+          textAlign: 'center', 
+          zIndex: 2000, 
+          direction: 'rtl',
+          boxSizing: 'border-box'
         }}>
-          <div style={{ fontSize: '48px', marginBottom: '20px' }}></div>
-          <div style={{ fontSize: '36px', marginBottom: '20px', fontWeight: 'bold', color: '#00ff00' }}>
+          <div style={{ fontSize: window.innerWidth < 600 ? '20px' : '36px', marginBottom: window.innerWidth < 600 ? '10px' : '15px', fontWeight: 'bold', color: '#00ff00' }}>
             نجحت! ممتاز!
           </div>
-          <div style={{ fontSize: '24px', marginBottom: '15px' }}>
-            نقاطك: <span style={{ color: '#00ff00', fontSize: '36px' }}>11</span> / 11
+          <div style={{ fontSize: window.innerWidth < 600 ? '16px' : '24px', marginBottom: window.innerWidth < 600 ? '8px' : '10px' }}>
+            نقاطك: <span style={{ color: '#00ff00', fontSize: window.innerWidth < 600 ? '24px' : '36px' }}>11</span> / 11
           </div>
-          <div style={{ fontSize: '18px', marginBottom: '30px', opacity: 0.9 }}>
+          <div style={{ fontSize: window.innerWidth < 600 ? '14px' : '18px', marginBottom: window.innerWidth < 600 ? '15px' : '20px', opacity: 0.9 }}>
             أكملت المستوى {currentLevel} بنجاح! 
           </div>
           
-          <div style={{ marginBottom: '40px' }}>
-            <div style={{ fontSize: '16px', marginBottom: '10px', opacity: 0.9 }}>التقدم الكلي</div>
+          <div style={{ marginBottom: window.innerWidth < 600 ? '18px' : '40px' }}>
+            <div style={{ fontSize: window.innerWidth < 600 ? '13px' : '16px', marginBottom: window.innerWidth < 600 ? '8px' : '10px', opacity: 0.9 }}>التقدم الكلي</div>
             <div style={{ 
-              width: '100%', height: '30px', background: 'rgba(255,255,255,0.1)',
-              borderRadius: '15px', overflow: 'hidden', border: '2px solid rgba(0, 255, 0, 0.3)',
+              width: '100%', 
+              height: window.innerWidth < 600 ? '35px' : '30px', 
+              background: 'rgba(255,255,255,0.1)',
+              borderRadius: window.innerWidth < 600 ? '10px' : '15px', 
+              overflow: 'hidden', 
+              border: window.innerWidth < 600 ? '1px solid rgba(0, 255, 0, 0.3)' : '2px solid rgba(0, 255, 0, 0.3)',
               display: 'flex'
             }}>
               {[0, 1, 2, 3].map(i => (
@@ -795,8 +819,11 @@ export default function EarthGlobe() {
                   width: '25%', 
                   background: levelsCompleted[i] ? 'linear-gradient(90deg, #00ff00, #00cc00)' : 'rgba(255,255,255,0.05)',
                   borderRight: i < 3 ? '1px solid rgba(255,255,255,0.2)' : 'none',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '16px', fontWeight: 'bold',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  fontSize: window.innerWidth < 600 ? '16px' : '16px', 
+                  fontWeight: 'bold',
                   transition: 'all 0.5s ease'
                 }}>
                   {levelsCompleted[i] ? '✓' : i + 1}
@@ -805,13 +832,18 @@ export default function EarthGlobe() {
             </div>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: window.innerWidth < 600 ? '10px' : '12px' }}>
             {currentLevel < 4 && (
               <button onClick={() => startLearning(currentLevel + 1)} style={{
-                padding: '20px 40px', fontSize: '22px',
+                padding: window.innerWidth < 600 ? '12px 20px' : '20px 40px', 
+                fontSize: window.innerWidth < 600 ? '16px' : '22px',
                 background: 'linear-gradient(135deg, #4d94ff, #00d4ff)',
-                border: 'none', borderRadius: '12px', color: 'white',
-                cursor: 'pointer', fontWeight: 'bold'
+                border: 'none', 
+                borderRadius: window.innerWidth < 600 ? '10px' : '12px', 
+                color: 'white',
+                cursor: 'pointer', 
+                fontWeight: 'bold',
+                minHeight: window.innerWidth < 600 ? '45px' : '50px'
               }}>
                 المستوى التالي ({currentLevel + 1})
               </button>
@@ -819,22 +851,31 @@ export default function EarthGlobe() {
             
             {levelsCompleted.every(l => l) && (
               <button onClick={startFinalTest} style={{
-                padding: '25px 40px', fontSize: '24px',
+                padding: window.innerWidth < 600 ? '14px 20px' : '25px 40px', 
+                fontSize: window.innerWidth < 600 ? '17px' : '24px',
                 background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                border: '3px solid #FFD700', borderRadius: '15px', color: 'white',
-                cursor: 'pointer', fontWeight: 'bold',
-                boxShadow: '0 4px 20px rgba(255, 215, 0, 0.4)'
+                border: window.innerWidth < 600 ? '2px solid #FFD700' : '3px solid #FFD700', 
+                borderRadius: window.innerWidth < 600 ? '10px' : '15px', 
+                color: 'white',
+                cursor: 'pointer', 
+                fontWeight: 'bold',
+                boxShadow: '0 4px 20px rgba(255, 215, 0, 0.4)',
+                minHeight: window.innerWidth < 600 ? '48px' : '55px'
               }}>
-                الاختبار النهائي الكبير
+                🏆 الاختبار النهائي الكبير
               </button>
             )}
             
             <button onClick={resetGame} style={{
-              padding: '12px 30px', fontSize: '16px',
+              padding: window.innerWidth < 600 ? '10px 18px' : '12px 30px', 
+              fontSize: window.innerWidth < 600 ? '13px' : '16px',
               background: 'rgba(255, 255, 255, 0.1)',
-              border: '2px solid rgba(255, 255, 255, 0.3)',
-              borderRadius: '8px', color: 'white',
-              cursor: 'pointer', marginTop: '10px'
+              border: window.innerWidth < 600 ? '1px solid rgba(255, 255, 255, 0.3)' : '2px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: window.innerWidth < 600 ? '8px' : '8px', 
+              color: 'white',
+              cursor: 'pointer', 
+              marginTop: window.innerWidth < 600 ? '5px' : '10px',
+              minHeight: window.innerWidth < 600 ? '40px' : '45px'
             }}>
               ← القائمة الرئيسية
             </button>
