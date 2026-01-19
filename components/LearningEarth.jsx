@@ -4,64 +4,8 @@ import React, { useRef, Suspense, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
-const europeLevel1 = [
-  { name: 'فرنسا', lat: 46, lng: 2, fact: 'باريس' },
-  { name: 'ألمانيا', lat: 51, lng: 10, fact: 'برلين' },
-  { name: 'إيطاليا', lat: 42, lng: 12, fact: 'روما' },
-  { name: 'إسبانيا', lat: 40, lng: -4, fact: 'مدريد' },
-  { name: 'بريطانيا', lat: 54, lng: -2, fact: 'لندن' },
-  { name: 'بولندا', lat: 52, lng: 19, fact: 'وارسو' },
-  { name: 'رومانيا', lat: 46, lng: 25, fact: 'بوخارست' },
-  { name: 'هولندا', lat: 52, lng: 5, fact: 'أمستردام' },
-  { name: 'بلجيكا', lat: 50, lng: 4, fact: 'بروكسل' },
-  { name: 'اليونان', lat: 39, lng: 22, fact: 'أثينا' },
-  { name: 'البرتغال', lat: 39, lng: -8, fact: 'لشبونة' }
-];
-
-const europeLevel2 = [
-  { name: 'التشيك', lat: 49, lng: 15, fact: 'براغ' },
-  { name: 'المجر', lat: 47, lng: 19, fact: 'بودابست' },
-  { name: 'السويد', lat: 62, lng: 15, fact: 'ستوكهولم' },
-  { name: 'النمسا', lat: 47, lng: 13, fact: 'فيينا' },
-  { name: 'صربيا', lat: 44, lng: 21, fact: 'بلغراد' },
-  { name: 'بلغاريا', lat: 43, lng: 25, fact: 'صوفيا' },
-  { name: 'الدنمارك', lat: 56, lng: 10, fact: 'كوبنهاغن' },
-  { name: 'فنلندا', lat: 64, lng: 26, fact: 'هلسنكي' },
-  { name: 'سلوفاكيا', lat: 48, lng: 19, fact: 'براتيسلافا' },
-  { name: 'النرويج', lat: 60, lng: 8, fact: 'أوسلو' },
-  { name: 'أيرلندا', lat: 53, lng: -8, fact: 'دبلن' }
-];
-
-const europeLevel3 = [
-  { name: 'كرواتيا', lat: 45, lng: 16, fact: 'زغرب' },
-  { name: 'سويسرا', lat: 47, lng: 8, fact: 'برن' },
-  { name: 'ليتوانيا', lat: 56, lng: 24, fact: 'فيلنيوس' },
-  { name: 'سلوفينيا', lat: 46, lng: 15, fact: 'ليوبليانا' },
-  { name: 'لاتفيا', lat: 57, lng: 25, fact: 'ريغا' },
-  { name: 'إستونيا', lat: 59, lng: 26, fact: 'تالين' },
-  { name: 'مقدونيا الشمالية', lat: 41, lng: 22, fact: 'سكوبيه' },
-  { name: 'ألبانيا', lat: 41, lng: 20, fact: 'تيرانا' },
-  { name: 'البوسنة والهرسك', lat: 44, lng: 18, fact: 'سراييفو' },
-  { name: 'مولدوفا', lat: 47, lng: 29, fact: 'كيشيناو' },
-  { name: 'بيلاروسيا', lat: 53, lng: 28, fact: 'مينسك' }
-];
-
-const europeLevel4 = [
-  { name: 'أوكرانيا', lat: 49, lng: 32, fact: 'كييف' },
-  { name: 'كوسوفو', lat: 42, lng: 21, fact: 'بريشتينا' },
-  { name: 'لوكسمبورغ', lat: 49, lng: 6, fact: 'لوكسمبورغ' },
-  { name: 'الجبل الأسود', lat: 42, lng: 19, fact: 'بودغوريتسا' },
-  { name: 'مالطا', lat: 36, lng: 14, fact: 'فاليتا' },
-  { name: 'أيسلندا', lat: 65, lng: -18, fact: 'ريكيافيك' },
-  { name: 'أندورا', lat: 42, lng: 1, fact: 'أندورا لا فيلا' },
-  { name: 'موناكو', lat: 43, lng: 7, fact: 'موناكو' },
-  { name: 'ليختنشتاين', lat: 47, lng: 9, fact: 'فادوز' },
-  { name: 'سان مارينو', lat: 43, lng: 12, fact: 'سان مارينو' },
-  { name: 'الفاتيكان', lat: 41, lng: 12, fact: 'الفاتيكان' }
-];
-
-const europeLevels = [europeLevel1, europeLevel2, europeLevel3, europeLevel4];
-const allEuropeCountries = [...europeLevel1, ...europeLevel2, ...europeLevel3, ...europeLevel4];
+import { continentsData } from './continents';
+import ContinentSelector from './ContinentSelector';
 
 function CountryHighlight({ country }) {
   const spotlightRef = useRef();
@@ -232,9 +176,13 @@ function Loader() {
 }
 
 export default function EarthGlobe() {
-  const [gameState, setGameState] = useState('menu');
+  const [gameState, setGameState] = useState('continent-select');
+  const [selectedContinent, setSelectedContinent] = useState(null);
   const [currentLevel, setCurrentLevel] = useState(1);
-  const [levelsCompleted, setLevelsCompleted] = useState([false, false, false, false]);
+  const [progressData, setProgressData] = useState({
+    africa: [false, false, false, false, false],
+    europe: [false, false, false, false]
+  });
   const [currentCountryIndex, setCurrentCountryIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [markers, setMarkers] = useState([]);
@@ -283,9 +231,14 @@ export default function EarthGlobe() {
       .catch(err => console.error('Error loading borders:', err));
   }, []);
   
+  const handleSelectContinent = (continentId) => {
+    setSelectedContinent(continentId);
+    setGameState('menu');
+  };
+  
   const startLearning = (level) => {
     setCurrentLevel(level);
-    setShuffledCountries(europeLevels[level - 1]);
+    setShuffledCountries(continentsData[selectedContinent].levels[level - 1]);
     setCurrentCountryIndex(0);
     setMarkers([]);
     setClickedCorrectly(false);
@@ -294,7 +247,7 @@ export default function EarthGlobe() {
   };
   
   const startTest = () => {
-    const countries = [...europeLevels[currentLevel - 1]];
+    const countries = [...continentsData[selectedContinent].levels[currentLevel - 1]];
     const shuffled = countries.sort(() => Math.random() - 0.5);
     setShuffledCountries(shuffled);
     setCurrentCountryIndex(0);
@@ -304,7 +257,7 @@ export default function EarthGlobe() {
   };
   
   const startFinalTest = () => {
-    const shuffled = [...allEuropeCountries].sort(() => Math.random() - 0.5);
+    const shuffled = [...continentsData[selectedContinent].allCountries].sort(() => Math.random() - 0.5);
     setShuffledCountries(shuffled);
     setCurrentCountryIndex(0);
     setScore(0);
@@ -366,9 +319,9 @@ export default function EarthGlobe() {
       if (currentCountryIndex + 1 >= shuffledCountries.length) {
         if (gameState === 'test') {
           if (score + (distance < 4 ? 1 : 0) === 11) {
-            const newCompleted = [...levelsCompleted];
-            newCompleted[currentLevel - 1] = true;
-            setLevelsCompleted(newCompleted);
+            const newProgress = { ...progressData };
+            newProgress[selectedContinent][currentLevel - 1] = true;
+            setProgressData(newProgress);
             setGameState('level-complete');
           } else {
             setGameState('test-failed');
@@ -382,8 +335,17 @@ export default function EarthGlobe() {
     }, 1500);
   };
   
-  const resetGame = () => {
+  const backToMenu = () => {
     setGameState('menu');
+    setMarkers([]);
+    setScore(0);
+    setCurrentCountryIndex(0);
+    setClickedCorrectly(false);
+  };
+
+  const backToContinentSelect = () => {
+    setGameState('continent-select');
+    setSelectedContinent(null);
     setCurrentLevel(1);
     setMarkers([]);
     setScore(0);
@@ -391,10 +353,13 @@ export default function EarthGlobe() {
     setClickedCorrectly(false);
   };
 
-  return (
-    <div style={{ width: '100vw', height: '100vh', background: '#000' }}>
+  const currentContinentData = selectedContinent ? continentsData[selectedContinent] : null;
+  const currentLevelsCompleted = selectedContinent ? progressData[selectedContinent] : [];
+
+ return (
+    <div className="w-screen h-screen bg-black">
       <Canvas camera={{ position: [0, 0, 8], fov: 45 }} gl={{ antialias: true }}>
-          {(gameState === 'menu' || gameState === 'level-complete' || gameState === 'learning-complete' || gameState === 'test-failed' || gameState === 'final-complete') && (
+        {(gameState === 'menu' || gameState === 'continent-select' || gameState === 'level-complete' || gameState === 'learning-complete' || gameState === 'test-failed' || gameState === 'final-complete') && (
           <>
             <ambientLight intensity={0.8} />
             <directionalLight position={[5, 3, 5]} intensity={2} />
@@ -447,274 +412,165 @@ export default function EarthGlobe() {
         />
       </Canvas>
       
-      {gameState === 'menu' && (
-        <div style={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          background: 'rgba(0, 0, 0, 0.95)', border: '3px solid #4d94ff', borderRadius: '20px',
-          padding: '30px 20px', color: 'white', fontFamily: 'Arial, sans-serif',
-          width: '90%', maxWidth: '600px',
-          textAlign: 'center', zIndex: 2000, direction: 'rtl',
-          maxHeight: '90vh', overflowY: 'auto'
-        }}>
-          <div style={{ fontSize: 'clamp(24px, 5vw, 42px)', marginBottom: '15px', fontWeight: 'bold' }}>رحلة تعلم أوروبا</div>
-          <div style={{ fontSize: 'clamp(14px, 3vw, 18px)', marginBottom: '10px', opacity: 0.8 }}>تعلم مواقع 44 دولة أوروبية</div>
-          <div style={{ fontSize: 'clamp(12px, 2.5vw, 16px)', marginBottom: '30px', opacity: 0.7 }}>4 مستويات • 11 دولة في كل مستوى • اختبار نهائي شامل</div>
+      {gameState === 'continent-select' && (
+        <ContinentSelector 
+          onSelectContinent={handleSelectContinent}
+          progressData={progressData}
+        />
+      )}
+      
+      {gameState === 'menu' && currentContinentData && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/95 border-[3px] border-[#4d94ff] rounded-[20px] px-5 py-[30px] text-white font-sans w-[90%] max-w-[600px] text-center z-[2000] rtl max-h-[90vh] overflow-y-auto">
+          <div className="text-[clamp(24px,5vw,42px)] mb-2.5 font-bold">
+            {currentContinentData.emoji} {currentContinentData.name}
+          </div>
+          <div className="text-[clamp(14px,3vw,18px)] mb-2.5 opacity-80">
+            تعلم مواقع {currentContinentData.totalCountries} دولة
+          </div>
+          <div className="text-[clamp(12px,2.5vw,16px)] mb-[30px] opacity-70">
+            {currentLevelsCompleted.length} مستويات • 11 دولة في كل مستوى
+          </div>
           
-          <div style={{ marginBottom: '30px' }}>
-            <div style={{ fontSize: 'clamp(12px, 2.5vw, 16px)', marginBottom: '10px', opacity: 0.9 }}>التقدم الكلي</div>
-            <div style={{ 
-              width: '100%', height: '30px', background: 'rgba(255,255,255,0.1)',
-              borderRadius: '15px', overflow: 'hidden', border: '2px solid rgba(77, 148, 255, 0.3)',
-              display: 'flex'
-            }}>
-              {[0, 1, 2, 3].map(i => (
-                <div key={i} style={{
-                  width: '25%', 
-                  background: levelsCompleted[i] ? 'linear-gradient(90deg, #00ff00, #00cc00)' : 'rgba(255,255,255,0.05)',
-                  borderRight: i < 3 ? '1px solid rgba(255,255,255,0.2)' : 'none',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 'clamp(12px, 2.5vw, 14px)', fontWeight: 'bold',
-                  transition: 'all 0.5s ease'
-                }}>
-                  {levelsCompleted[i] ? '✓' : i + 1}
+          <div className="mb-[30px]">
+            <div className="text-[clamp(12px,2.5vw,16px)] mb-2.5 opacity-90">التقدم الكلي</div>
+            <div className="w-full h-[30px] bg-white/10 rounded-[15px] overflow-hidden border-2 border-[#4d94ff]/30 flex">
+              {currentLevelsCompleted.map((completed, i) => (
+                <div key={i} className={`${completed ? 'bg-gradient-to-r from-[#00ff00] to-[#00cc00]' : 'bg-white/5'} flex items-center justify-center text-[clamp(12px,2.5vw,14px)] font-bold transition-all duration-500 ${i < currentLevelsCompleted.length - 1 ? 'border-r border-white/20' : ''}`} style={{width: `${100 / currentLevelsCompleted.length}%`}}>
+                  {completed ? '✓' : i + 1}
                 </div>
               ))}
             </div>
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '20px' }}>
-            {[1, 2, 3, 4].map(level => (
-              <button key={level} 
-                onClick={() => startLearning(level)} 
-                disabled={level > 1 && !levelsCompleted[level - 2]}
-                style={{
-                  padding: '15px 10px', fontSize: 'clamp(14px, 3vw, 18px)', 
-                  background: levelsCompleted[level - 1] ? 'linear-gradient(135deg, #00ff00, #00cc00)' : 
-                              (level > 1 && !levelsCompleted[level - 2]) ? 'rgba(100, 100, 100, 0.2)' :
-                              'linear-gradient(135deg, #4d94ff, #00d4ff)',
-                  border: '2px solid ' + (levelsCompleted[level - 1] ? '#00ff00' : '#4d94ff'),
-                  borderRadius: '10px', color: 'white',
-                  cursor: (level > 1 && !levelsCompleted[level - 2]) ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s', fontWeight: 'bold',
-                  opacity: (level > 1 && !levelsCompleted[level - 2]) ? 0.5 : 1,
-                  minHeight: '80px', display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center'
-                }}>
-                <div>{levelsCompleted[level - 1] ? '✓ ' : ''}المستوى {level}</div>
-                <div style={{ fontSize: 'clamp(11px, 2.5vw, 14px)', marginTop: '5px', opacity: 0.9 }}>11 دولة</div>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3 mb-5">
+            {currentLevelsCompleted.map((completed, i) => (
+              <button key={i} 
+                onClick={() => startLearning(i + 1)} 
+                disabled={i > 0 && !currentLevelsCompleted[i - 1]}
+                className={`p-[15px_10px] text-[clamp(14px,3vw,18px)] ${completed ? 'bg-gradient-to-br from-[#00ff00] to-[#00cc00] border-[#00ff00]' : (i > 0 && !currentLevelsCompleted[i - 1]) ? 'bg-gray-500/20 border-gray-500 cursor-not-allowed opacity-50' : 'bg-gradient-to-br from-[#4d94ff] to-[#00d4ff] border-[#4d94ff] cursor-pointer'} border-2 rounded-[10px] text-white transition-all duration-300 font-bold min-h-[80px] flex flex-col items-center justify-center`}>
+                <div>{completed ? '✓ ' : ''}المستوى {i + 1}</div>
+                <div className="text-[clamp(11px,2.5vw,14px)] mt-[5px] opacity-90">11 دولة</div>
               </button>
             ))}
           </div>
           
-          {levelsCompleted.every(l => l) && (
-            <button onClick={startFinalTest} style={{
-              padding: '20px 15px', fontSize: 'clamp(16px, 4vw, 24px)', width: '100%',
-              background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-              border: '3px solid #FFD700', borderRadius: '15px', color: 'white',
-              cursor: 'pointer', fontWeight: 'bold', marginTop: '10px',
-              boxShadow: '0 4px 20px rgba(255, 215, 0, 0.4)'
-            }}>
+          {currentLevelsCompleted.every(l => l) && (
+            <button onClick={startFinalTest} className="p-[20px_15px] text-[clamp(16px,4vw,24px)] w-full bg-gradient-to-br from-[#FFD700] to-[#FFA500] border-[3px] border-[#FFD700] rounded-[15px] text-white cursor-pointer font-bold mt-2.5 shadow-[0_4px_20px_rgba(255,215,0,0.4)]">
               الاختبار النهائي الكبير
-              <div style={{ fontSize: 'clamp(12px, 3vw, 16px)', marginTop: '8px', opacity: 0.9 }}>اختبر نفسك في جميع الـ 44 دولة!</div>
+              <div className="text-[clamp(12px,3vw,16px)] mt-2 opacity-90">
+                اختبر نفسك في جميع الـ {currentContinentData.totalCountries} دولة!
+              </div>
             </button>
           )}
+
+          <button onClick={backToContinentSelect} className="p-[12px_30px] text-[clamp(14px,3vw,16px)] bg-white/10 border-2 border-white/30 rounded-lg text-white cursor-pointer mt-5 w-full">
+            ← العودة لاختيار القارة
+          </button>
         </div>
       )}
       
       <button 
         onClick={() => setAutoRotate(!autoRotate)}
-        style={{
-          position: 'absolute', bottom: '30px', right: '30px', zIndex: 1000,
-          padding: '10px 15px', fontSize: 'clamp(14px, 3vw, 18px)', 
-          background: autoRotate ? 'rgba(255, 100, 100, 0.9)' : 'rgba(100, 255, 100, 0.9)',
-          border: 'none', borderRadius: '10px', color: 'white',
-          cursor: 'pointer', fontWeight: 'bold', direction: 'rtl'
-        }}
+        className={`absolute bottom-[30px] right-[30px] z-[1000] p-[10px_15px] text-[clamp(14px,3vw,18px)] ${autoRotate ? 'bg-red-500/90' : 'bg-green-500/90'} border-none rounded-[10px] text-white cursor-pointer font-bold rtl`}
       >
         {autoRotate ? 'إيقاف' : 'تشغيل'}
       </button>
       
       {gameState === 'learning' && (
         <>
-          <div style={{
-            position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)',
-            width: 'calc(100% - 20px)', maxWidth: '500px', zIndex: 1000
-          }}>
-            <div style={{
-              background: 'rgba(0,0,0,0.9)', padding: '10px 15px', borderRadius: '12px',
-              border: '2px solid #FFD700', boxShadow: '0 0 15px rgba(255, 215, 0, 0.3)',
-              direction: 'rtl', textAlign: 'center'
-            }}>
-              <div style={{ fontSize: '13px', marginBottom: '8px', color: '#FFD700', fontWeight: 'bold' }}>
-                 التقدم الكلي - المستوى {currentLevel} من 4
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-[calc(100%-20px)] max-w-[500px] z-[1000]">
+            <div className="bg-black/90 p-[10px_15px] rounded-xl border-2 border-[#FFD700] shadow-[0_0_15px_rgba(255,215,0,0.3)] rtl text-center">
+              <div className="text-[13px] mb-2 text-[#FFD700] font-bold">
+                 التقدم الكلي - المستوى {currentLevel} من {currentLevelsCompleted.length}
               </div>
-              <div style={{ 
-                width: '100%', height: '20px', background: 'rgba(255,255,255,0.1)',
-                borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(255, 215, 0, 0.3)',
-                display: 'flex'
-              }}>
-                {[0, 1, 2, 3].map(i => (
-                  <div key={i} style={{
-                    width: '25%', 
-                    background: levelsCompleted[i] ? 'linear-gradient(90deg, #00ff00, #00cc00)' : 
-                               i === currentLevel - 1 ? 'linear-gradient(90deg, #FFD700, #FFA500)' : 
-                               'rgba(255,255,255,0.05)',
-                    borderRight: i < 3 ? '1px solid rgba(255,255,255,0.2)' : 'none',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '12px', fontWeight: 'bold',
-                    transition: 'all 0.5s ease'
-                  }}>
-                    {levelsCompleted[i] ? '✓' : i === currentLevel - 1 ? `${currentCountryIndex}/${shuffledCountries.length}` : i + 1}
+              <div className="w-full h-5 bg-white/10 rounded-[10px] overflow-hidden border border-[#FFD700]/30 flex">
+                {currentLevelsCompleted.map((completed, i) => (
+                  <div key={i} className={`${completed ? 'bg-gradient-to-r from-[#00ff00] to-[#00cc00]' : i === currentLevel - 1 ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500]' : 'bg-white/5'} flex items-center justify-center text-xs font-bold transition-all duration-500 ${i < currentLevelsCompleted.length - 1 ? 'border-r border-white/20' : ''}`} style={{width: `${100 / currentLevelsCompleted.length}%`}}>
+                    {completed ? '✓' : i === currentLevel - 1 ? `${currentCountryIndex}/${shuffledCountries.length}` : i + 1}
                   </div>
                 ))}
               </div>
             </div>
           </div>
           
-          <div style={{
-            position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)',
-            background: 'rgba(0,0,0,0.9)', padding: '15px 20px', borderRadius: '15px',
-            color: 'white', fontSize: '14px', fontWeight: 'bold', zIndex: 1000,
-            direction: 'rtl', textAlign: 'center', width: 'calc(100% - 20px)', maxWidth: '400px',
-            border: '2px solid #FFD700', boxShadow: '0 0 15px rgba(255, 215, 0, 0.3)',
-            pointerEvents: 'none'
-          }}>
-            <div style={{ fontSize: '14px', marginBottom: '10px', opacity: 0.9 }}>
+          <div className="absolute top-[80px] left-1/2 -translate-x-1/2 bg-black/90 p-[15px_20px] rounded-[15px] text-white text-sm font-bold z-[1000] rtl text-center w-[calc(100%-20px)] max-w-[400px] border-2 border-[#FFD700] shadow-[0_0_15px_rgba(255,215,0,0.3)] pointer-events-none">
+            <div className="text-sm mb-2.5 opacity-90">
               الدولة {currentCountryIndex + 1} من {shuffledCountries.length}
             </div>
             
-            <div style={{ fontSize: '26px', color: '#FFD700', marginBottom: '10px', fontWeight: 'bold' }}>
+            <div className="text-[26px] text-[#FFD700] mb-2.5 font-bold">
               {shuffledCountries[currentCountryIndex]?.name}
             </div>
             
-            <div style={{ 
-              marginTop: '10px', padding: '10px', background: 'rgba(255, 215, 0, 0.1)',
-              borderRadius: '8px', borderRight: '3px solid #FFD700'
-            }}>
-              <div style={{ fontSize: '12px', opacity: 0.8, marginBottom: '5px' }}>عاصمة الدولة :</div>
-              <div style={{ fontSize: '13px', lineHeight: '1.4' }}>
+            <div className="mt-2.5 p-2.5 bg-[#FFD700]/10 rounded-lg border-r-[3px] border-[#FFD700]">
+              <div className="text-xs opacity-80 mb-[5px]">عاصمة الدولة :</div>
+              <div className="text-[13px] leading-[1.4]">
                 {shuffledCountries[currentCountryIndex]?.fact || 'دولة رائعة ومميزة!'}
               </div>
             </div>
           </div>
           
-{feedback && (
-            <div style={{
-              position: 'absolute', bottom: '80px', left: '50%', transform: 'translateX(-50%)',
-              background: feedback.type === 'correct' ? 'rgba(22, 212, 22, 0.95)' : 'rgba(255, 165, 0, 0.95)',
-              padding: '20px 40px', borderRadius: '15px', color: 'white',
-              fontSize: '22px', fontWeight: 'bold', zIndex: 1000,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-              width: 'calc(100% - 40px)', maxWidth: '400px', textAlign: 'center'
-            }}>
+          {feedback && (
+            <div className={`absolute bottom-[80px] left-1/2 -translate-x-1/2 ${feedback.type === 'correct' ? 'bg-[#16d416]/95' : 'bg-orange-500/95'} p-[20px_40px] rounded-[15px] text-white text-[22px] font-bold z-[1000] shadow-[0_4px_20px_rgba(0,0,0,0.5)] w-[calc(100%-40px)] max-w-[400px] text-center`}>
               {feedback.message}
             </div>
           )}
         </>
       )}
       
-  {gameState === 'learning-complete' && (
-        <div style={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          background: 'rgba(0, 0, 0, 0.95)', border: '3px solid #FFD700', borderRadius: '20px',
-          padding: 'clamp(20px, 5vw, 50px)', color: 'white', fontFamily: 'Arial, sans-serif',
-          width: '90%', maxWidth: '500px',
-          textAlign: 'center', zIndex: 2000, direction: 'rtl',
-          maxHeight: '90vh', overflowY: 'auto'
-        }}>
-          <div style={{ fontSize: 'clamp(24px, 6vw, 32px)', marginBottom: '15px', fontWeight: 'bold' }}>
+      {gameState === 'learning-complete' && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/95 border-[3px] border-[#FFD700] rounded-[20px] p-[clamp(20px,5vw,50px)] text-white font-sans w-[90%] max-w-[500px] text-center z-[2000] rtl max-h-[90vh] overflow-y-auto">
+          <div className="text-[clamp(24px,6vw,32px)] mb-[15px] font-bold">
             أحسنت! أتممت التعلم
           </div>
-          <div style={{ fontSize: 'clamp(14px, 3.5vw, 18px)', marginBottom: '30px', opacity: 0.9, lineHeight: '1.8' }}>
+          <div className="text-[clamp(14px,3.5vw,18px)] mb-[30px] opacity-90 leading-[1.8]">
             تعلمت مواقع 11 دولة في المستوى {currentLevel}!<br/>
             الآن حان وقت الاختبار 
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <button onClick={startTest} style={{
-              padding: 'clamp(15px, 4vw, 20px) clamp(20px, 5vw, 40px)', 
-              fontSize: 'clamp(16px, 4vw, 22px)',
-              background: 'linear-gradient(135deg, #4d94ff, #00d4ff)',
-              border: '3px solid #4d94ff', borderRadius: '12px', color: 'white',
-              cursor: 'pointer', fontWeight: 'bold',
-              boxShadow: '0 4px 15px rgba(77, 148, 255, 0.3)'
-            }}>
+          <div className="flex flex-col gap-3">
+            <button onClick={startTest} className="p-[clamp(15px,4vw,20px)_clamp(20px,5vw,40px)] text-[clamp(16px,4vw,22px)] bg-gradient-to-br from-[#4d94ff] to-[#00d4ff] border-[3px] border-[#4d94ff] rounded-xl text-white cursor-pointer font-bold shadow-[0_4px_15px_rgba(77,148,255,0.3)]">
                تعلمت وأريد الاختبار
             </button>
             
-            <button onClick={() => startLearning(currentLevel)} style={{
-              padding: 'clamp(12px, 3vw, 15px) clamp(20px, 5vw, 40px)', 
-              fontSize: 'clamp(14px, 3.5vw, 18px)',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '2px solid rgba(255, 255, 255, 0.3)',
-              borderRadius: '10px', color: 'white',
-              cursor: 'pointer', fontWeight: 'bold'
-            }}>
+            <button onClick={() => startLearning(currentLevel)} className="p-[clamp(12px,3vw,15px)_clamp(20px,5vw,40px)] text-[clamp(14px,3.5vw,18px)] bg-white/10 border-2 border-white/30 rounded-[10px] text-white cursor-pointer font-bold">
                إعادة التعلم
             </button>
             
-            <button onClick={resetGame} style={{
-              padding: 'clamp(10px, 2.5vw, 12px) clamp(15px, 4vw, 30px)', 
-              fontSize: 'clamp(13px, 3vw, 16px)',
-              background: 'transparent',
-              border: '2px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '8px', color: 'white',
-              cursor: 'pointer', marginTop: '8px'
-            }}>
+            <button onClick={backToMenu} className="p-[clamp(10px,2.5vw,12px)_clamp(15px,4vw,30px)] text-[clamp(13px,3vw,16px)] bg-transparent border-2 border-white/20 rounded-lg text-white cursor-pointer mt-2">
               ← القائمة الرئيسية
             </button>
           </div>
         </div>
       )}
       
-      
       {(gameState === 'test' || gameState === 'final-test') && (
         <>
-          <div style={{
-            position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)',
-            width: 'calc(100% - 20px)', maxWidth: '500px', zIndex: 1000
-          }}>
-            <div style={{
-              background: 'rgba(0,0,0,0.9)', padding: '15px 20px', borderRadius: '15px',
-              border: '2px solid #4d94ff', color: 'white', direction: 'rtl', textAlign: 'center'
-            }}>
-              <div style={{ fontSize: '16px', marginBottom: '10px', fontWeight: 'bold' }}>
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-[calc(100%-20px)] max-w-[500px] z-[1000]">
+            <div className="bg-black/90 p-[15px_20px] rounded-[15px] border-2 border-[#4d94ff] text-white rtl text-center">
+              <div className="text-base mb-2.5 font-bold">
                 {gameState === 'final-test' ? ' الاختبار النهائي الكبير' : ` اختبار المستوى ${currentLevel}`}
               </div>
               
-              <div style={{ fontSize: '18px', marginBottom: '12px' }}>
-                النقاط: <span style={{ color: '#4d94ff', fontSize: '24px', fontWeight: 'bold' }}>{score}</span> / {shuffledCountries.length}
+              <div className="text-lg mb-3">
+                النقاط: <span className="text-[#4d94ff] text-2xl font-bold">{score}</span> / {shuffledCountries.length}
               </div>
               
-              <div style={{
-                width: '100%', height: '10px', background: 'rgba(255,255,255,0.2)',
-                borderRadius: '10px', overflow: 'hidden', marginBottom: '12px'
-              }}>
-                <div style={{
-                  width: `${(currentCountryIndex / shuffledCountries.length) * 100}%`,
-                  height: '100%', background: 'linear-gradient(90deg, #4d94ff, #00d4ff)',
-                  transition: 'width 0.5s ease', borderRadius: '10px'
-                }} />
+              <div className="w-full h-2.5 bg-white/20 rounded-[10px] overflow-hidden mb-3">
+                <div className="h-full bg-gradient-to-r from-[#4d94ff] to-[#00d4ff] transition-all duration-500 rounded-[10px]" style={{width: `${(currentCountryIndex / shuffledCountries.length) * 100}%`}} />
               </div>
               
-              <div style={{ fontSize: '20px', color: '#4d94ff', fontWeight: 'bold' }}>
+              <div className="text-xl text-[#4d94ff] font-bold">
                 ابحث عن: {shuffledCountries[currentCountryIndex]?.name}
               </div>
-              <div style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>
+              <div className="text-sm opacity-70 mt-[5px]">
                 السؤال {currentCountryIndex + 1} من {shuffledCountries.length}
               </div>
             </div>
           </div>
           
           {feedback && (
-            <div style={{
-              position: 'absolute', bottom: '80px', left: '50%', transform: 'translateX(-50%)',
-              background: feedback.type === 'correct' ? 'rgba(22, 212, 22, 0.95)' : 'rgba(255, 0, 0, 0.95)',
-              padding: '20px 40px', borderRadius: '15px', color: 'white',
-              fontSize: '22px', fontWeight: 'bold', zIndex: 1000,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-              width: 'calc(100% - 40px)', maxWidth: '400px', textAlign: 'center'
-            }}>
+            <div className={`absolute bottom-[80px] left-1/2 -translate-x-1/2 ${feedback.type === 'correct' ? 'bg-[#16d416]/95' : 'bg-red-500/95'} p-[20px_40px] rounded-[15px] text-white text-[22px] font-bold z-[1000] shadow-[0_4px_20px_rgba(0,0,0,0.5)] w-[calc(100%-40px)] max-w-[400px] text-center`}>
               {feedback.message}
             </div>
           )}
@@ -722,158 +578,100 @@ export default function EarthGlobe() {
       )}
       
       {gameState === 'test-failed' && (
-        <div style={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          background: 'rgba(0, 0, 0, 0.95)', border: '3px solid #ff6b6b', borderRadius: '20px',
-          padding: '50px', color: 'white', fontFamily: 'Arial, sans-serif', minWidth: '500px',
-          textAlign: 'center', zIndex: 2000, direction: 'rtl'
-        }}>
-          <div style={{ fontSize: '32px', marginBottom: '20px', fontWeight: 'bold', color: '#ff6b6b' }}>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/95 border-[3px] border-[#ff6b6b] rounded-[20px] p-[50px] text-white font-sans w-[90%] max-w-[500px] text-center z-[2000] rtl">
+          <div className="text-[32px] mb-5 font-bold text-[#ff6b6b]">
             لم تنجح في الاختبار
           </div>
-          <div style={{ fontSize: '24px', marginBottom: '15px' }}>
-            نقاطك: <span style={{ color: '#4d94ff', fontSize: '32px' }}>{score}</span> / 11
+          <div className="text-2xl mb-[15px]">
+            نقاطك: <span className="text-[#4d94ff] text-[32px]">{score}</span> / 11
           </div>
-          <div style={{ fontSize: '18px', marginBottom: '40px', opacity: 0.9, lineHeight: '1.8' }}>
+          <div className="text-lg mb-10 opacity-90 leading-[1.8]">
             للانتقال للمستوى التالي يجب الإجابة على جميع الأسئلة بشكل صحيح (11/11)<br/>
             لا تقلق! حاول مرة أخرى 
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <button onClick={startTest} style={{
-              padding: '20px 40px', fontSize: '22px',
-              background: 'linear-gradient(135deg, #00ff00, #00cc00)',
-              border: 'none', borderRadius: '12px', color: 'white',
-              cursor: 'pointer', fontWeight: 'bold'
-            }}>
+          <div className="flex flex-col gap-[15px]">
+            <button onClick={startTest} className="p-[20px_40px] text-[22px] bg-gradient-to-br from-[#00ff00] to-[#00cc00] border-none rounded-xl text-white cursor-pointer font-bold">
                إعادة الاختبار
             </button>
             
-            <button onClick={() => startLearning(currentLevel)} style={{
-              padding: '15px 40px', fontSize: '18px',
-              background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-              border: 'none', borderRadius: '10px', color: 'white',
-              cursor: 'pointer', fontWeight: 'bold'
-            }}>
+            <button onClick={() => startLearning(currentLevel)} className="p-[15px_40px] text-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] border-none rounded-[10px] text-white cursor-pointer font-bold">
                إعادة التعلم أولاً
             </button>
             
-            <button onClick={resetGame} style={{
-              padding: '12px 30px', fontSize: '16px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '2px solid rgba(255, 255, 255, 0.3)',
-              borderRadius: '8px', color: 'white',
-              cursor: 'pointer', marginTop: '10px'
-            }}>
+            <button onClick={backToMenu} className="p-[12px_30px] text-base bg-white/10 border-2 border-white/30 rounded-lg text-white cursor-pointer mt-2.5">
               ← القائمة الرئيسية
             </button>
           </div>
         </div>
       )}
       
-  {gameState === 'level-complete' && (
-        <div style={{
-          position: 'absolute', 
-          top: '50%', 
-          left: '50%', 
-          transform: 'translate(-50%, -50%)',
-          background: 'rgba(0, 0, 0, 0.95)', 
-          border: window.innerWidth < 600 ? '2px solid #00ff00' : '3px solid #00ff00', 
+      {gameState === 'level-complete' && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/95 text-white font-sans text-center z-[2000] rtl box-border max-h-[90vh] overflow-y-auto" style={{
+          border: window.innerWidth < 600 ? '2px solid #00ff00' : '3px solid #00ff00',
           borderRadius: window.innerWidth < 600 ? '12px' : '15px',
-          padding: window.innerWidth < 600 ? '15px' : '50px', 
-          color: 'white', 
-          fontFamily: 'Arial, sans-serif', 
+          padding: window.innerWidth < 600 ? '15px' : '50px',
           width: window.innerWidth < 600 ? '70%' : 'auto',
           minWidth: window.innerWidth < 600 ? 'auto' : '500px',
-          maxWidth: window.innerWidth < 600 ? '70%' : '600px',
-          maxHeight: window.innerWidth < 600 ? '85vh' : '90vh',
-          overflowY: 'auto',
-          textAlign: 'center', 
-          zIndex: 2000, 
-          direction: 'rtl',
-          boxSizing: 'border-box'
+          maxWidth: window.innerWidth < 600 ? '70%' : '600px'
         }}>
-          <div style={{ fontSize: window.innerWidth < 600 ? '20px' : '36px', marginBottom: window.innerWidth < 600 ? '10px' : '15px', fontWeight: 'bold', color: '#00ff00' }}>
+          <div className="font-bold text-[#00ff00]" style={{fontSize: window.innerWidth < 600 ? '20px' : '36px', marginBottom: window.innerWidth < 600 ? '10px' : '15px'}}>
             نجحت! ممتاز!
           </div>
-          <div style={{ fontSize: window.innerWidth < 600 ? '16px' : '24px', marginBottom: window.innerWidth < 600 ? '8px' : '10px' }}>
-            نقاطك: <span style={{ color: '#00ff00', fontSize: window.innerWidth < 600 ? '24px' : '36px' }}>11</span> / 11
+          <div style={{fontSize: window.innerWidth < 600 ? '16px' : '24px', marginBottom: window.innerWidth < 600 ? '8px' : '10px'}}>
+            نقاطك: <span className="text-[#00ff00]" style={{fontSize: window.innerWidth < 600 ? '24px' : '36px'}}>11</span> / 11
           </div>
-          <div style={{ fontSize: window.innerWidth < 600 ? '14px' : '18px', marginBottom: window.innerWidth < 600 ? '15px' : '20px', opacity: 0.9 }}>
+          <div className="opacity-90" style={{fontSize: window.innerWidth < 600 ? '14px' : '18px', marginBottom: window.innerWidth < 600 ? '15px' : '20px'}}>
             أكملت المستوى {currentLevel} بنجاح! 
           </div>
           
-          <div style={{ marginBottom: window.innerWidth < 600 ? '18px' : '40px' }}>
-            <div style={{ fontSize: window.innerWidth < 600 ? '13px' : '16px', marginBottom: window.innerWidth < 600 ? '8px' : '10px', opacity: 0.9 }}>التقدم الكلي</div>
-            <div style={{ 
-              width: '100%', 
-              height: window.innerWidth < 600 ? '35px' : '30px', 
-              background: 'rgba(255,255,255,0.1)',
-              borderRadius: window.innerWidth < 600 ? '10px' : '15px', 
-              overflow: 'hidden', 
-              border: window.innerWidth < 600 ? '1px solid rgba(0, 255, 0, 0.3)' : '2px solid rgba(0, 255, 0, 0.3)',
-              display: 'flex'
+          <div style={{marginBottom: window.innerWidth < 600 ? '18px' : '40px'}}>
+            <div className="opacity-90" style={{fontSize: window.innerWidth < 600 ? '13px' : '16px', marginBottom: window.innerWidth < 600 ? '8px' : '10px'}}>التقدم الكلي</div>
+            <div className="w-full bg-white/10 overflow-hidden flex" style={{
+              height: window.innerWidth < 600 ? '35px' : '30px',
+              borderRadius: window.innerWidth < 600 ? '10px' : '15px',
+              border: window.innerWidth < 600 ? '1px solid rgba(0, 255, 0, 0.3)' : '2px solid rgba(0, 255, 0, 0.3)'
             }}>
-              {[0, 1, 2, 3].map(i => (
-                <div key={i} style={{
-                  width: '25%', 
-                  background: levelsCompleted[i] ? 'linear-gradient(90deg, #00ff00, #00cc00)' : 'rgba(255,255,255,0.05)',
-                  borderRight: i < 3 ? '1px solid rgba(255,255,255,0.2)' : 'none',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  fontSize: window.innerWidth < 600 ? '16px' : '16px', 
-                  fontWeight: 'bold',
-                  transition: 'all 0.5s ease'
+              {currentLevelsCompleted.map((completed, i) => (
+                <div key={i} className={`${completed ? 'bg-gradient-to-r from-[#00ff00] to-[#00cc00]' : 'bg-white/5'} flex items-center justify-center font-bold transition-all duration-500 ${i < currentLevelsCompleted.length - 1 ? 'border-r border-white/20' : ''}`} style={{
+                  width: `${100 / currentLevelsCompleted.length}%`,
+                  fontSize: window.innerWidth < 600 ? '16px' : '16px'
                 }}>
-                  {levelsCompleted[i] ? '✓' : i + 1}
+                  {completed ? '✓' : i + 1}
                 </div>
               ))}
             </div>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: window.innerWidth < 600 ? '10px' : '12px' }}>
-            {currentLevel < 4 && (
-              <button onClick={() => startLearning(currentLevel + 1)} style={{
-                padding: window.innerWidth < 600 ? '12px 20px' : '20px 40px', 
+          <div className="flex flex-col" style={{gap: window.innerWidth < 600 ? '10px' : '12px'}}>
+            {currentLevel < currentLevelsCompleted.length && (
+              <button onClick={() => startLearning(currentLevel + 1)} className="bg-gradient-to-br from-[#4d94ff] to-[#00d4ff] border-none text-white cursor-pointer font-bold" style={{
+                padding: window.innerWidth < 600 ? '12px 20px' : '20px 40px',
                 fontSize: window.innerWidth < 600 ? '16px' : '22px',
-                background: 'linear-gradient(135deg, #4d94ff, #00d4ff)',
-                border: 'none', 
-                borderRadius: window.innerWidth < 600 ? '10px' : '12px', 
-                color: 'white',
-                cursor: 'pointer', 
-                fontWeight: 'bold',
+                borderRadius: window.innerWidth < 600 ? '10px' : '12px',
                 minHeight: window.innerWidth < 600 ? '45px' : '50px'
               }}>
                 المستوى التالي ({currentLevel + 1})
               </button>
             )}
             
-            {levelsCompleted.every(l => l) && (
-              <button onClick={startFinalTest} style={{
-                padding: window.innerWidth < 600 ? '14px 20px' : '25px 40px', 
+            {currentLevelsCompleted.every(l => l) && (
+              <button onClick={startFinalTest} className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-white cursor-pointer font-bold shadow-[0_4px_20px_rgba(255,215,0,0.4)]" style={{
+                padding: window.innerWidth < 600 ? '14px 20px' : '25px 40px',
                 fontSize: window.innerWidth < 600 ? '17px' : '24px',
-                background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                border: window.innerWidth < 600 ? '2px solid #FFD700' : '3px solid #FFD700', 
-                borderRadius: window.innerWidth < 600 ? '10px' : '15px', 
-                color: 'white',
-                cursor: 'pointer', 
-                fontWeight: 'bold',
-                boxShadow: '0 4px 20px rgba(255, 215, 0, 0.4)',
+                border: window.innerWidth < 600 ? '2px solid #FFD700' : '3px solid #FFD700',
+                borderRadius: window.innerWidth < 600 ? '10px' : '15px',
                 minHeight: window.innerWidth < 600 ? '48px' : '55px'
               }}>
                 🏆 الاختبار النهائي الكبير
               </button>
             )}
             
-            <button onClick={resetGame} style={{
-              padding: window.innerWidth < 600 ? '10px 18px' : '12px 30px', 
+            <button onClick={backToMenu} className="bg-white/10 text-white cursor-pointer" style={{
+              padding: window.innerWidth < 600 ? '10px 18px' : '12px 30px',
               fontSize: window.innerWidth < 600 ? '13px' : '16px',
-              background: 'rgba(255, 255, 255, 0.1)',
               border: window.innerWidth < 600 ? '1px solid rgba(255, 255, 255, 0.3)' : '2px solid rgba(255, 255, 255, 0.3)',
-              borderRadius: window.innerWidth < 600 ? '8px' : '8px', 
-              color: 'white',
-              cursor: 'pointer', 
+              borderRadius: window.innerWidth < 600 ? '8px' : '8px',
               marginTop: window.innerWidth < 600 ? '5px' : '10px',
               minHeight: window.innerWidth < 600 ? '40px' : '45px'
             }}>
@@ -884,61 +682,46 @@ export default function EarthGlobe() {
       )}
       
       {gameState === 'final-complete' && (
-        <div style={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          background: 'rgba(0, 0, 0, 0.95)', border: '3px solid gold',
-          borderRadius: '20px', padding: '50px', color: 'white',
-          fontFamily: 'Arial, sans-serif', minWidth: '500px',
-          textAlign: 'center', zIndex: 2000, direction: 'rtl'
-        }}>
-          <div style={{ fontSize: '64px', marginBottom: '20px' }}>
-            {score >= 40 ? '' : score >= 35 ? '' : score >= 30 ? '' : score >= 25 ? '' : ''}
-            {/* {score >= 40 ? '🏆' : score >= 35 ? '🥇' : score >= 30 ? '🥈' : score >= 25 ? '🥉' : '📚'} */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/95 border-[3px] border-[gold] rounded-[20px] p-[50px] text-white font-sans w-[90%] max-w-[500px] text-center z-[2000] rtl">
+          <div className="text-[64px] mb-5">
+            {score >= currentContinentData.totalCountries * 0.9 ? '🏆' : 
+             score >= currentContinentData.totalCountries * 0.8 ? '🥇' : 
+             score >= currentContinentData.totalCountries * 0.7 ? '🥈' : 
+             score >= currentContinentData.totalCountries * 0.6 ? '🥉' : '📚'}
           </div>
-          <div style={{ fontSize: '36px', marginBottom: '30px', fontWeight: 'bold' }}>
-            {score >= 40 ? 'خبير الجغرافيا!' : score >= 35 ? 'ممتاز جداً!' : score >= 30 ? 'رائع!' : score >= 25 ? 'جيد جداً!' : 'جيد! واصل التعلم!'}
-          </div>
-          
-          <div style={{ fontSize: '28px', marginBottom: '20px' }}>
-            نقاطك النهائية: <span style={{ color: '#FFD700', fontSize: '42px' }}>{score}</span> / 44
+          <div className="text-4xl mb-[30px] font-bold">
+            {score >= currentContinentData.totalCountries * 0.9 ? 'خبير الجغرافيا!' : 
+             score >= currentContinentData.totalCountries * 0.8 ? 'ممتاز جداً!' : 
+             score >= currentContinentData.totalCountries * 0.7 ? 'رائع!' : 
+             score >= currentContinentData.totalCountries * 0.6 ? 'جيد جداً!' : 'جيد! واصل التعلم!'}
           </div>
           
-          <div style={{ 
-            padding: '20px', background: 'rgba(255, 215, 0, 0.1)',
-            borderRadius: '15px', marginBottom: '30px',
-            border: '2px solid rgba(255, 215, 0, 0.3)'
-          }}>
-            <div style={{ fontSize: '18px', marginBottom: '15px', opacity: 0.9 }}>
-              نسبة النجاح: <span style={{ color: '#FFD700', fontSize: '24px', fontWeight: 'bold' }}>
-                {Math.round((score / 44) * 100)}%
+          <div className="text-[28px] mb-5">
+            نقاطك النهائية: <span className="text-[#FFD700] text-[42px]">{score}</span> / {currentContinentData.totalCountries}
+          </div>
+          
+          <div className="p-5 bg-[#FFD700]/10 rounded-[15px] mb-[30px] border-2 border-[#FFD700]/30">
+            <div className="text-lg mb-[15px] opacity-90">
+              نسبة النجاح: <span className="text-[#FFD700] text-2xl font-bold">
+                {Math.round((score / currentContinentData.totalCountries) * 100)}%
               </span>
             </div>
             
-            <div style={{ fontSize: '16px', opacity: 0.8, lineHeight: '1.6' }}>
-              {score >= 40 ? ' أداء استثنائي! أنت خبير حقيقي في جغرافيا أوروبا!' :
-               score >= 35 ? ' أداء رائع جداً! معرفة قوية بخريطة أوروبا!' :
-               score >= 30 ? ' أداء جيد! لديك معرفة قوية بأوروبا!' :
-               score >= 25 ? ' أداء مقبول! تحتاج لمزيد من التدريب!' :
+            <div className="text-base opacity-80 leading-[1.6]">
+              {score >= currentContinentData.totalCountries * 0.9 ? ' أداء استثنائي! أنت خبير حقيقي في جغرافيا ' + currentContinentData.name + '!' :
+               score >= currentContinentData.totalCountries * 0.8 ? ' أداء رائع جداً! معرفة قوية بخريطة ' + currentContinentData.name + '!' :
+               score >= currentContinentData.totalCountries * 0.7 ? ' أداء جيد! لديك معرفة قوية بـ' + currentContinentData.name + '!' :
+               score >= currentContinentData.totalCountries * 0.6 ? ' أداء مقبول! تحتاج لمزيد من التدريب!' :
                ' استمر في التعلم والتدريب لتحسين أدائك!'}
             </div>
           </div>
           
-          <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={resetGame} style={{
-              padding: '18px 35px', fontSize: '20px',
-              background: 'linear-gradient(135deg, #4d94ff, #00d4ff)',
-              border: 'none', borderRadius: '12px', color: 'white',
-              cursor: 'pointer', fontWeight: 'bold'
-            }}>
+          <div className="flex gap-[15px] justify-center flex-wrap">
+            <button onClick={backToMenu} className="p-[18px_35px] text-xl bg-gradient-to-br from-[#4d94ff] to-[#00d4ff] border-none rounded-xl text-white cursor-pointer font-bold">
                القائمة الرئيسية
             </button>
             
-            <button onClick={startFinalTest} style={{
-              padding: '18px 35px', fontSize: '20px',
-              background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-              border: 'none', borderRadius: '12px', color: 'white',
-              cursor: 'pointer', fontWeight: 'bold'
-            }}>
+            <button onClick={startFinalTest} className="p-[18px_35px] text-xl bg-gradient-to-br from-[#FFD700] to-[#FFA500] border-none rounded-xl text-white cursor-pointer font-bold">
                إعادة الاختبار النهائي
             </button>
           </div>
